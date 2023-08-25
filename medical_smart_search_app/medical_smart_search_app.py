@@ -7,7 +7,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores.faiss import FAISS
 from langchain.document_loaders import PyPDFLoader
 
-with open('secrets.toml', 'r') as f:
+with open('../secrets.toml', 'r') as f:
     config = toml.load(f)
 
 os.environ["OPENAI_API_TYPE"] = "azure"

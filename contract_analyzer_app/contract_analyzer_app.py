@@ -3,7 +3,7 @@ import openai
 import toml
 
 
-with open('secrets.toml', 'r') as f:
+with open('../secrets.toml', 'r') as f:
     config = toml.load(f)
 
 
@@ -11,6 +11,14 @@ openai.api_type = "azure"
 openai.api_key = config['OPENAI_API_KEY']
 openai.api_base = config['OPENAI_API_BASE']
 openai.api_version = "2023-07-01-preview"
+
+st.set_page_config(
+    page_title="Home",
+    page_icon="📝",
+)
+
+st.header("歡迎使用合約分析器 📝")
+st.subheader('合約 #371')
 
 contract = """
 
@@ -34,18 +42,8 @@ contract = """
 [服務提供者簽名區塊]
 
 """
-st.set_page_config(
-    page_title="Home",
-    page_icon="📝",
-)
 
-st.header("歡迎使用合約分析器 📝")
-
-st.subheader('合約 #371')
-        
 st.write(contract)
-
-st.subheader('關鍵條款提取 🔍')
 
 # Define a function to communicate with OpenAI using ChatCompletion
 def openai_response(user_prompt):
@@ -73,22 +71,19 @@ def openai_response(user_prompt):
     
     return response.choices[0].message['content'].strip()
 
-# Continue with your Streamlit code as previously shown...
-
-
+st.subheader('關鍵條款提取 🔍')
 # UI components
 col1, col2 = st.columns(2)
 
 with col1:
     request = st.selectbox(
         '選擇您要詢問的關鍵條款',
-        ("終止條款是什麼？", "保密條款是什麼？", "支付金額是多少？", "到期日是什麼甚麼時候？", "賠償條款是什麼？")
+        ["終止條款是什麼？", "保密條款是什麼？", "支付金額是多少？", "到期日是什麼甚麼時候？", "賠償條款是什麼？"]
     )
 
 with col2:
     if request:
-        response = openai_response(contract + request)
-        st.write(response)
+        st.write(openai_response(contract + request))
         
         
 # Language Analysis Section
@@ -98,8 +93,7 @@ with col3:
     user_input = st.text_input("You:", "")
 with col4:
     if user_input:
-        response = openai_response(contract + user_input)
-        st.write('\n\n\n' + response)
+        st.write(openai_response(contract + user_input))
 
 # Potential Issues Section
 st.subheader('潛在問題 🚩')
@@ -107,12 +101,11 @@ col5, col6 = st.columns(2)
 with col5:
     request = st.selectbox(
         '選擇您要詢問的關鍵條款',
-        ("合約中有模糊之處嗎？", "合約中有相互衝突的條款嗎？")
+        ["合約中有模糊之處嗎？", "合約中有相互衝突的條款嗎？"]
     )
 with col6:
     if request:
-        response = openai_response(contract + request)
-        st.write('\n\n\n' + response)
+        st.write(openai_response(contract + request))
 
 # Contract Template Section
 st.subheader('合約模板產生器 🖋️')
@@ -126,5 +119,4 @@ with col7:
 with col8:
     if st.button('生成模板'):
         prompt_text = f"按照以下元素生成服務交付協議：服務提供者：{service_provider}，客戶：{client}，服務描述：{services_description}，開始日期：{start_date}，服務持續期間：{duration}。"
-        response = openai_response(prompt_text)
-        st.write('\n\n\n' + response)
+        st.write(openai_response(prompt_text))
